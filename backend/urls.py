@@ -29,5 +29,6 @@ urlpatterns = [
 
 # Adiciona rotas específicas para cada ViewSet com barras finais opcionais
 urlpatterns += [
-    re_path(r'^api/Profiles/(?P<pk>\d+)/?$', ProfileViewSet.as_view({'get': 'retrieve', 'put': 'update', 'post': 'create', 'delete': 'destroy'}), name='profiles-detail'),
+   re_path(r'^api/Profiles/(?P<pk>\d+)/?$', ProfileViewSet.as_view({'get': 'retrieve', 'put': 'update', 'post': 'create', 'delete': 'destroy'}), name='profiles-detail'),
+   re_path(r'^api/Profiles/?$', ProfileViewSet.as_view({'get': 'list', 'post': 'create'}), name='profiles-list'),
 ]
