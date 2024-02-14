@@ -22,7 +22,10 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     #apps
-    'profiles',
+    'apps.appointments',
+    'apps.locations',
+    'apps.messageClini',
+    'apps.profiles',
     #libs
     'corsheaders',
     "rest_framework",
@@ -31,6 +34,7 @@ INSTALLED_APPS = [
     "drf_spectacular",
     'django_filters'
 ]
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
