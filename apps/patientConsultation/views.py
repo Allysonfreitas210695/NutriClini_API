@@ -1,16 +1,18 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from .models import MessageClini
-from .serializers import MessageCliniSerializer
+from rest_framework.permissions import IsAuthenticated
+from .models import PatientConsultation
+from .serializers import PatientConsultationSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.authentication import SessionAuthentication 
 
-class MessageCliniViewSet(viewsets.ModelViewSet):
+class PatientConsultationViewSet(viewsets.ModelViewSet):
     authentication_classes = [SessionAuthentication, JWTAuthentication]
     permission_classes = [IsAuthenticated]
-    queryset = MessageClini.objects.all()
-    serializer_class = MessageCliniSerializer
+    queryset = PatientConsultation.objects.all()
+    serializer_class = PatientConsultationSerializer
+    permission_classes = [IsAuthenticated]  # Ajuste conforme necessário
 
     def create(self, request, *args, **kwargs):
         try:

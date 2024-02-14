@@ -1,13 +1,13 @@
 from .models import Profile
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from django.db import IntegrityError
 
 class ProfileSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Profile
-        fields = ['fullName', 'cpf', 'email', 'password', 'phone', 'specialty', 'crn', 'type']
-    
+        fields = ['fullName', 'cpf', 'dateOfBirth', 'gender', 'email', 'password', 'phone', 'street', 'number', 'neighborhood', 'city', 'state', 'cep', 'specialty', 'crn', 'type', 'password', 'observation']
+
     def create(self, validated_data):
         try:
             # Verificar se já existe um usuário com o mesmo e-mail
