@@ -14,7 +14,7 @@ class TimeSchedules(models.Model):
 
 class Appointment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='appointments', null=True)
-    date_appointments = models.DateField(null=True)
+    date_appointments = models.DateField(null=False)
     service_location = models.ForeignKey(Address, on_delete=models.CASCADE, related_name='appointments', null=False)
     schedules = models.ManyToManyField(TimeSchedules, related_name='appointments', verbose_name='Schedules', blank=True)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Created At')
