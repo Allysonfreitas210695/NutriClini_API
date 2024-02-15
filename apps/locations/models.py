@@ -9,7 +9,7 @@ class Address(models.Model):
     number = models.CharField(max_length=10, verbose_name='Número', blank=False, null=False)
     neighborhood = models.CharField(max_length=255, verbose_name='Bairro', blank=False, null=False)
     city = models.CharField(max_length=255, verbose_name='Cidade', blank=False, null=False)
-    state = models.CharField(max_length=255, verbose_name='Estado', blank=False, null=False)
+    state = models.CharField(max_length=256, verbose_name='Estado', blank=False, null=False)
 
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Created At')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Updated At')
