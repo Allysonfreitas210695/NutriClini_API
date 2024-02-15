@@ -25,7 +25,7 @@ INSTALLED_APPS = [
     'apps.appointments',
     'apps.locations',
     'apps.messageClini',
-    'apps.patientConsultation',
+    'apps.consultation',
     'apps.profiles',
     #libs
     'corsheaders',
