@@ -5,7 +5,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from apps.appointments.views import AppointmentViewSet, TimeSchedulesViewSet
 from apps.locations.views import AddressViewSet
 from apps.messageClini.views import MessageCliniViewSet
-from apps.patientConsultation.views import PatientConsultationViewSet
+from apps.consultation.views import ConsultationViewSet
 from apps.profiles.views import ProfileViewSet
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
@@ -17,7 +17,7 @@ router.register(r'Address', AddressViewSet, basename='address')
 router.register(r'Appointments', AppointmentViewSet, basename='appointments')
 router.register(r'TimeSchedules', TimeSchedulesViewSet, basename='timeSchedules')
 router.register(r'MessageClinis', MessageCliniViewSet, basename='messageClini')
-router.register(r'PatientConsultations', PatientConsultationViewSet, basename='patientConsultations')
+router.register(r'Consultations', ConsultationViewSet, basename='consultations')
 
 urlpatterns = [
     path("admin/", admin.site.urls),

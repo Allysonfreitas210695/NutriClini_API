@@ -6,7 +6,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ['fullName', 'cpf', 'dateOfBirth', 'gender', 'email', 'password', 'phone', 'street', 'number', 'neighborhood', 'city', 'state', 'cep', 'specialty', 'crn', 'type', 'password', 'observation']
+        fields = ['id', 'fullName', 'cpf', 'dateOfBirth', 'gender', 'email', 'password', 'phone', 'street', 'number', 'neighborhood', 'city', 'state', 'cep', 'specialty', 'crn', 'type', 'password', 'observation']
 
     def create(self, validated_data):
         try:
