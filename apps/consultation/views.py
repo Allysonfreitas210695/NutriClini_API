@@ -20,3 +20,11 @@ class ConsultationViewSet(viewsets.ModelViewSet):
             return super().create(request, *args, **kwargs)
         except Exception as e:
             return Response({"Message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+        @action(detail=True, methods=['GET'])
+        def user_history(self, request, pk=None):
+            consultation = self.get_object()
+            user_id = consultation.user_patient.id
+            user_history = ConsultationHistory.objects.filter(user_patient_id=user_id)
+            serializer = ConsultationHistorySerializer(user_history, many=True)
+            return Response(serializer.data)
