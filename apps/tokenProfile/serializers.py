@@ -2,7 +2,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, Toke
 from rest_framework import serializers
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
-    profile_id = serializers.IntegerField(read_only=True)
+    id = serializers.IntegerField(read_only=True)
     type = serializers.CharField(read_only=True)
     access = serializers.CharField(read_only=True)
     refresh = serializers.CharField(read_only=True)
@@ -18,6 +18,8 @@ class CustomTokenRefreshSerializer(TokenRefreshSerializer):
     id = serializers.IntegerField(
         help_text="ID do perfil associado ao token de atualização."
     )
+    type = serializers.CharField(read_only=True)
+    access = serializers.CharField(read_only=True)
 
     def validate(self, attrs):
         data = super().validate(attrs)
