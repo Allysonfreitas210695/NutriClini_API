@@ -32,14 +32,17 @@ This guide aims to jump start the project settings and bring a fast hands-on DRF
 ~~~
     python3 -m venv venv
 ~~~
+
 - **Step 2** - Activate the virtual python environment:
 ~~~
     . venv/bin/activate
 ~~~
+
 - **Step 3** - Install all dependencies:
 ~~~
     pip install -r requirements.txt
 ~~~
+
   **Step 4** - Create file .env of root project and install dependencies! ;)
 ~~~
     # Exemplo de configurações para banco de dados
@@ -54,11 +57,18 @@ This guide aims to jump start the project settings and bring a fast hands-on DRF
     SECRET_KEY=
     DEBUG=True
 ~~~
-- **Step 5** - Run internal server and fun! ;)
+
+- **Step 5** - Run the command below to create the tables ;)
+~~~   
+    python3 manage.py migrate
+~~~
+
+- **Step 6** - Run internal server and fun! ;)
 ~~~
     python manage.py runserver
 ~~~
-  **Step 6** - Create super user! ;)
+
+  **Step 7** - Create super user! ;)
 ~~~  
     python manage.py createsuperuser
 ~~~
