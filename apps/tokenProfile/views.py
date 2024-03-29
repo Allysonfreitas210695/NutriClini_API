@@ -37,11 +37,13 @@ class CustomTokenRefreshView(TokenRefreshView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+        # Chamada ao método post da classe base para obter a resposta padrão
         response = super().post(request, *args, **kwargs)
 
         try:
             # Tente obter o perfil pelo ID fornecido
             profile = Profile.objects.get(id=id)
+            # Adicionar o ID e o tipo do perfil à resposta
             response.data['id'] = profile.id
             response.data['type'] = profile.type
         except Profile.DoesNotExist:
@@ -50,5 +52,8 @@ class CustomTokenRefreshView(TokenRefreshView):
                 {'detail': 'Profile not found for the given ID'},
                 status=status.HTTP_404_NOT_FOUND
             )
+
+        # Adicionar o refresh token à resposta
+        response.data['refresh'] = refresh_token
 
         return response
