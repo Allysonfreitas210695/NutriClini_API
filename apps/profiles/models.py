@@ -49,7 +49,7 @@ class Profile(models.Model):
     
     def save(self, *args, **kwargs):
         if self.type == 'patient':
-            required_fields = ['gender', 'dateOfBirth', 'cep', 'street', 'number', 'neighborhood', 'city', 'state', 'observation']
+            required_fields = ['gender', 'dateOfBirth', 'cep', 'street', 'number', 'neighborhood', 'city', 'state']
             missing_fields = [field.capitalize() for field in required_fields if not getattr(self, field)]
             
             if missing_fields:
