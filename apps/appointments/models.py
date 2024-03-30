@@ -13,7 +13,7 @@ class TimeSchedules(models.Model):
         return str(self.time_value)
 
 class Appointment(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='appointments', null=True)
+    nutritionist = models.ForeignKey(User, on_delete=models.CASCADE, related_name='appointments', null=True)
     date_appointments = models.DateField(null=False)
     service_location = models.ForeignKey(Address, on_delete=models.CASCADE, related_name='appointments', null=False)
     schedules = models.ManyToManyField(TimeSchedules, related_name='appointments', verbose_name='Schedules', blank=True)

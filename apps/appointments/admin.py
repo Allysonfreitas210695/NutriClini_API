@@ -8,7 +8,7 @@ class TimeSchedulesInline(admin.TabularInline):
 
 class AppointmentAdmin(admin.ModelAdmin):
     inlines = [TimeSchedulesInline]
-    list_display = ['id', 'user', 'date_appointments', 'service_location']
+    list_display = ['id', 'nutritionist', 'date_appointments', 'service_location']
     list_filter = ['date_appointments', 'service_location']
     search_fields = ['date_appointments', 'service_location']
 
