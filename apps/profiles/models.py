@@ -20,7 +20,7 @@ class Profile(models.Model):
         ('inactive', 'Inactive'),
     ]
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile', null=True)
+    nutritionist = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile', null=True)
     fullName = models.CharField(max_length=120, null=False, blank=False)
     cpf = models.CharField(max_length=14, unique=True, validators=[MinLengthValidator(limit_value=11, message="Enter a valid CPF.")], blank=False, null=False)
     email = models.EmailField(unique=True, validators=[EmailValidator("Enter a valid email address.")], blank=False, null=False)

@@ -8,7 +8,7 @@ class Consultation(models.Model):
         ('completed', 'Completed'),
     ]
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='consultation_as_doctor', null=True)
+    nutritionist = models.OneToOneField(User, on_delete=models.CASCADE, related_name='consultation_as_doctor', null=True)
     user_patient = models.OneToOneField(User, on_delete=models.CASCADE, related_name='consultation_as_patient', null=False)
     address_consulta = models.OneToOneField(Address, on_delete=models.CASCADE, related_name='consultation', null=False)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, null=False, blank=False, default="pending")

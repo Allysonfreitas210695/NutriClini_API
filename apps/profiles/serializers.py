@@ -13,7 +13,7 @@ class ProfileSerializer(serializers.ModelSerializer):
         try:
             # Verificar se já existe um usuário com o mesmo e-mail
             if get_user_model().objects.filter(email=validated_data['email']).exists():
-                raise serializers.ValidationError("Erro! Já existe um usuário com o mesmo e-mail.")
+                raise serializers.ValidationError("Error! There is already a user with the same email.")
             
             with transaction.atomic():
                 # antes de inserir verificar se exite ou nao , em caso de nao criar se sim estoura um erro
@@ -27,9 +27,13 @@ class ProfileSerializer(serializers.ModelSerializer):
                 user.is_superuser = True
                 user.save()
 
-                # Removendo o campo 'id' dos dados validados
-                validated_data.pop('id', None)
-
+                if validated_data["type"] == "nutritionist":
+                    validated_data.pop("nutritionist", None)
+                
+                if validated_data["type"] == "patient":
+                    if validated_data["nutritionist"] is None:
+                        raise serializers.ValidationError("For the patient type, you must provide the nutritionist who will be registering.")
+                            
                 profile_serializer = self.Meta.model(**validated_data)
                 profile_serializer.save()
 
