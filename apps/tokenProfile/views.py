@@ -1,8 +1,9 @@
 
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework.response import Response
+from apps.nutritionist.models import Nutritionist
 from .serializers import CustomTokenObtainPairSerializer, CustomTokenRefreshSerializer
-from ..profiles.models import Profile
+
 from rest_framework import status
 
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -14,12 +15,10 @@ class CustomTokenObtainPairView(TokenObtainPairView):
         serializer.is_valid(raise_exception=True)
 
         try:
-            profile = Profile.objects.get(email=request.data["username"])
+            profile = Nutritionist.objects.get(email=request.data["username"])
             response.data['id'] = profile.id
-            response.data['type'] = profile.type
-        except Profile.DoesNotExist:
+        except Nutritionist.DoesNotExist:
             response.data['id'] = None
-            response.data['type'] = None
 
         return response
 
@@ -42,11 +41,11 @@ class CustomTokenRefreshView(TokenRefreshView):
 
         try:
             # Tente obter o perfil pelo ID fornecido
-            profile = Profile.objects.get(id=id)
+            profile = Nutritionist.objects.get(id=id)
             # Adicionar o ID e o tipo do perfil à resposta
             response.data['id'] = profile.id
             response.data['type'] = profile.type
-        except Profile.DoesNotExist:
+        except Nutritionist.DoesNotExist:
             # Se o perfil não for encontrado, retorne uma resposta de erro
             return Response(
                 {'detail': 'Profile not found for the given ID'},

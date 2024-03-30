@@ -27,6 +27,9 @@ class MessageCliniViewSet(viewsets.ModelViewSet):
         
     @action(detail=False, methods=['get'], url_path='nutritionist/(?P<id>\d+)')
     def by_nutritionist(self, request, id=None, *args, **kwargs):
-        messages = MessageClini.objects.filter(nutritionist=id)
-        serializer = self.get_serializer(messages, many=True)
-        return Response(serializer.data)  
+        messageClini = MessageClini.objects.filter(nutritionist=id)
+        if messageClini.exists():
+            serializer = self.get_serializer(messageClini, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response([], status=status.HTTP_200_OK) 

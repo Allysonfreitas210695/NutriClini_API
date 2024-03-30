@@ -37,9 +37,12 @@ class AppointmentViewSet(viewsets.ModelViewSet):
             return super().create(request, *args, **kwargs)
         except Exception as e:
             return Response({"Message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        
+
     @action(detail=False, methods=['get'], url_path='nutritionist/(?P<id>\d+)')
     def by_nutritionist(self, request, id=None, *args, **kwargs):
-        messages = Appointment.objects.filter(nutritionist=id)
-        serializer = self.get_serializer(messages, many=True)
-        return Response(serializer.data)  
+        appointments = Appointment.objects.filter(nutritionist=id)
+        if appointments.exists():
+            serializer = self.get_serializer(appointments, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response([], status=status.HTTP_200_OK)

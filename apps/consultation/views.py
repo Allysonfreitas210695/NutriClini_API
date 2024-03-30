@@ -28,14 +28,27 @@ class ConsultationViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['get'], url_path='nutritionist/(?P<id>\d+)')
     def by_nutritionist(self, request, id=None, *args, **kwargs):
-        messages = Consultation.objects.filter(nutritionist=id)
-        serializer = self.get_serializer(messages, many=True)
-        return Response(serializer.data)  
+        consultation = Consultation.objects.filter(nutritionist=id)
+        if consultation.exists():
+            serializer = self.get_serializer(consultation, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response([], status=status.HTTP_200_OK)
     
     @action(detail=False, methods=['get'], url_path='patient/(?P<id>\d+)')
     def by_patient(self, request, id=None, *args, **kwargs):
-        messages = Consultation.objects.filter(user_patient=id)
-        serializer = self.get_serializer(messages, many=True)
-        return Response(serializer.data) 
+        consultation = Consultation.objects.filter(user_patient=id)
+        if consultation.exists():
+            serializer = self.get_serializer(consultation, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response([], status=status.HTTP_200_OK)
     
-    
+    @action(detail=False, methods=['get'], url_path='status/(?P<status>\w+)')
+    def by_status(self, request, status=None, *args, **kwargs):
+        consultation = Consultation.objects.filter(status=status)
+        if consultation.exists():
+            serializer = self.get_serializer(consultation, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response([], status=status.HTTP_200_OK) 

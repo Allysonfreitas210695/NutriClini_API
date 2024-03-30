@@ -2,6 +2,8 @@ from django.contrib.auth.models import User
 from apps.locations.models import Address
 from django.db import models
 
+from apps.nutritionist.models import Nutritionist
+
 class TimeSchedules(models.Model):
     time_value = models.TimeField(verbose_name='Time Value')
 
@@ -13,7 +15,7 @@ class TimeSchedules(models.Model):
         return str(self.time_value)
 
 class Appointment(models.Model):
-    nutritionist = models.ForeignKey(User, on_delete=models.CASCADE, related_name='appointments', null=True)
+    nutritionist = models.ForeignKey(Nutritionist, on_delete=models.CASCADE, related_name='appointment_nutritionist', null=False, blank=False)
     date_appointments = models.DateField(null=False)
     service_location = models.ForeignKey(Address, on_delete=models.CASCADE, related_name='appointments', null=False)
     schedules = models.ManyToManyField(TimeSchedules, related_name='appointments', verbose_name='Schedules', blank=True)

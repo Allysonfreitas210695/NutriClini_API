@@ -27,7 +27,8 @@ INSTALLED_APPS = [
     'apps.locations',
     'apps.messageClini',
     'apps.consultation',
-    'apps.profiles',
+    'apps.nutritionist',
+    'apps.patient',
     #libs
     'corsheaders',
     "rest_framework",
