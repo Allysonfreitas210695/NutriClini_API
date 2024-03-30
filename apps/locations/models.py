@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 
 class Address(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='address', null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='addresses', null=True)
     full_name = models.CharField(max_length=255, verbose_name='Nome completo', blank=False, null=False)
     cep = models.CharField(max_length=10, verbose_name='CEP', blank=False, null=False)
     street = models.CharField(max_length=255, verbose_name='Rua', blank=False, null=False)
