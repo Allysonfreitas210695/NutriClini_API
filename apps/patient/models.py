@@ -1,10 +1,8 @@
 from django.db import models
-from django.contrib.auth.models import User
 from django.core.validators import MinLengthValidator, EmailValidator
-from django.core.exceptions import ValidationError
-
 from apps.nutritionist.models import Nutritionist
-
+from django.core.mail import send_mail
+from decouple import config
     
 class Patient(models.Model):
     GENDER_CHOICES = [
@@ -18,7 +16,7 @@ class Patient(models.Model):
         ('inactive', 'Inactive'),
     ]
 
-    nutritionist = models.OneToOneField(Nutritionist, on_delete=models.CASCADE, related_name='profile', null=False, blank=False)
+    nutritionist = models.ForeignKey(Nutritionist, on_delete=models.CASCADE, related_name='patients', null=False, blank=False)
     fullName = models.CharField(max_length=120, null=False, blank=False)
     cpf = models.CharField(max_length=14, unique=True, validators=[MinLengthValidator(limit_value=11, message="Enter a valid CPF.")], blank=False, null=False)
     email = models.EmailField(unique=True, validators=[EmailValidator("Enter a valid email address.")], blank=False, null=False)
@@ -43,4 +41,24 @@ class Patient(models.Model):
         return self.fullName
     
     def save(self, *args, **kwargs):
+        if not self.pk:
+            print("you teste")
+            print(config("EMAIL_HOST_USER"))
+            send_mail(
+                'Cadastro de Paciente',
+                '', 
+                config("EMAIL_HOST_USER"), 
+                [self.email], 
+                html_message=f"""
+                                <html>
+                                <head></head>
+                                <body>
+                                    <h3>Bem-vindo à NutriClinic, {self.fullName}!</h3>
+                                    <p>Obrigado por se cadastrar em nossa clínica.</p>
+                                </body>
+                                </html>
+                                """,
+                fail_silently=False
+            )
+            print("passou")
         super().save(*args, **kwargs)
