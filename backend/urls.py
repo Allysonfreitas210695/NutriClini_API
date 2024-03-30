@@ -1,12 +1,13 @@
 from django.contrib import admin
 from django.urls import path, include, re_path
 from rest_framework.routers import DefaultRouter
+from apps.nutritionist.views import NutritionistViewSet
+from apps.patient.views import PatientViewSet
 from apps.tokenProfile.views import CustomTokenObtainPairView, CustomTokenRefreshView
 from apps.appointments.views import AppointmentViewSet, TimeSchedulesViewSet
 from apps.locations.views import AddressViewSet
 from apps.messageClini.views import MessageCliniViewSet
 from apps.consultation.views import ConsultationViewSet
-from apps.profiles.views import ProfileViewSet
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 
@@ -14,7 +15,8 @@ router = DefaultRouter()
 
 
 # Rota de cadastro de Usuarios
-router.register(r'Profiles', ProfileViewSet, basename='profile')
+router.register(r'Nutritionist', NutritionistViewSet, basename='nutritionists')
+router.register(r'Patient', PatientViewSet, basename='patients')
 router.register(r'Address', AddressViewSet, basename='address')
 router.register(r'Appointments', AppointmentViewSet, basename='appointments')
 router.register(r'TimeSchedules', TimeSchedulesViewSet, basename='timeSchedules')

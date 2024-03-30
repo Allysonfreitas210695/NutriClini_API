@@ -1,8 +1,9 @@
 from django.contrib.auth.models import User
 from django.db import models
+from apps.nutritionist.models import Nutritionist
 
 class Address(models.Model):
-    nutritionist = models.ForeignKey(User, on_delete=models.CASCADE, related_name='addresses', null=True)
+    nutritionist = models.ForeignKey(Nutritionist, on_delete=models.CASCADE, related_name='address_nutritionist', null=False, blank=False)
     full_name = models.CharField(max_length=255, verbose_name='Nome completo', blank=False, null=False)
     cep = models.CharField(max_length=10, verbose_name='CEP', blank=False, null=False)
     street = models.CharField(max_length=255, verbose_name='Rua', blank=False, null=False)

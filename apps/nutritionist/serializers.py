@@ -1,12 +1,12 @@
-from .models import Profile
+from .models import Nutritionist
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.db import transaction
 
-class ProfileSerializer(serializers.ModelSerializer):
+class NutritionistSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Profile
+        model = Nutritionist
         fields = "__all__"
 
     def create(self, validated_data):
@@ -26,16 +26,9 @@ class ProfileSerializer(serializers.ModelSerializer):
                 user.is_staff = True
                 user.is_superuser = True
                 user.save()
-
-                if validated_data["type"] == "nutritionist":
-                    validated_data.pop("nutritionist", None)
-                
-                if validated_data["type"] == "patient":
-                    if validated_data["nutritionist"] is None:
-                        raise serializers.ValidationError("For the patient type, you must provide the nutritionist who will be registering.")
                             
-                profile_serializer = self.Meta.model(**validated_data)
-                profile_serializer.save()
+                nutritionist_serializer = self.Meta.model(**validated_data)
+                nutritionist_serializer.save()
 
             return validated_data
         except Exception as e:
