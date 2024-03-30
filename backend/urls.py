@@ -1,9 +1,9 @@
 from django.contrib import admin
-from django.urls import path, include, re_path
+from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from apps.nutritionist.views import NutritionistViewSet
 from apps.patient.views import PatientViewSet
-from apps.tokenProfile.views import CustomTokenObtainPairView, CustomTokenRefreshView
+from apps.tokenProfile.views import CustomTokenObtainPairView, CustomTokenRefreshView, EnviarCodigoSenhaAPIView, ResetPasswordAPIView
 from apps.appointments.views import AppointmentViewSet, TimeSchedulesViewSet
 from apps.locations.views import AddressViewSet
 from apps.messageClini.views import MessageCliniViewSet
@@ -27,6 +27,8 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/token/", CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),  # Rota para obter o token de acesso
     path("api/token-refresh/", CustomTokenRefreshView.as_view(), name='token_refresh'),  # Rota para refresh token
+    path("api/enviar_codigo/", EnviarCodigoSenhaAPIView.as_view(), name='enviar_codigo'),  # Rota para enviar código de verificação por e-mail
+    path('api/reset-password/', ResetPasswordAPIView.as_view(), name='reset_password'),
     path("api/", include(router.urls)),
     path('schema/', SpectacularAPIView.as_view(), name='schema'),
     path('swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),

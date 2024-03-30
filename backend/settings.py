@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    'django.core.mail',
     #apps
     'apps.tokenProfile',
     'apps.appointments',
@@ -136,3 +137,11 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+### Configs de envio de email
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')  # Seu username do Ethereal Email
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')  # Sua senha do Ethereal Email
+DEFAULT_FROM_EMAIL = 'Nutriclinicn <nutriclinicn@gmail.com>'

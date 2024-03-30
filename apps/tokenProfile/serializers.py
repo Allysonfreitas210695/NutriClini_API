@@ -1,6 +1,14 @@
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
 from rest_framework import serializers
 
+
+class EnviarCodigoSenhaSerializer(serializers.Serializer):
+        email = serializers.EmailField()
+
+class ResetPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    new_password = serializers.CharField(max_length=30)
+
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     id = serializers.IntegerField(read_only=True)
     type = serializers.CharField(read_only=True)
