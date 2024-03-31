@@ -11,26 +11,24 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config('SECRET_KEY', default='mysecretkey')
-DEBUG = os.getenv('DEBUG', default=False)
-print(DEBUG)
+DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = [
     'nutricliniapi-production.up.railway.app',
     'https://nutricliniapi-production.up.railway.app',
-    'http://nutricliniapi-production.up.railway.app',
     'localhost', 
     '127.0.0.1',
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://nutricliniapi-production.up.railway.app',
     'http://nutricliniapi-production.up.railway.app',
-    'http://localhost:8000', 
-    'http://localhost:3000', 
-    'http://localhost:3030', 
-    'http://127.0.0.1:8000', 
-    'http://127.0.0.1:3000', 
-    'http://127.0.0.1:3030', 
+    'https://nutricliniapi-production.up.railway.app',
+    'localhost:8000', 
+    'localhost:3000', 
+    'localhost:3030', 
+    '127.0.0.1:8000', 
+    '127.0.0.1:3000', 
+    '127.0.0.1:3030', 
 ]
 
 INSTALLED_APPS = [
@@ -57,7 +55,7 @@ INSTALLED_APPS = [
     "drf_spectacular",
     'django_filters'
 ]
-print(config("USE_POSTGRES"))
+
 if config("USE_POSTGRES", False):
     INSTALLED_APPS += [
         'django.contrib.postgres',
@@ -159,6 +157,8 @@ USE_TZ = True
 
 # Configurações de arquivos estáticos
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"  # Diretório onde os arquivos estáticos serão coletados
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Configurações de envio de email
@@ -169,6 +169,3 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = 'Nutriclinicn <nutriclinicn@gmail.com>'
-
-
-print("DEBUG during execution:", DEBUG)
