@@ -16,19 +16,20 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 ALLOWED_HOSTS = [
     'nutricliniapi-production.up.railway.app',
     'https://nutricliniapi-production.up.railway.app',
+    'http://nutricliniapi-production.up.railway.app',
     'localhost', 
     '127.0.0.1',
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    'http://nutricliniapi-production.up.railway.app',
     'https://nutricliniapi-production.up.railway.app',
-    'localhost:8000', 
-    'localhost:3000', 
-    'localhost:3030', 
-    '127.0.0.1:8000', 
-    '127.0.0.1:3000', 
-    '127.0.0.1:3030', 
+    'http://nutricliniapi-production.up.railway.app',
+    'http://localhost:8000', 
+    'http://localhost:3000', 
+    'http://localhost:3030', 
+    'http://127.0.0.1:8000', 
+    'http://127.0.0.1:3000', 
+    'http://127.0.0.1:3030', 
 ]
 
 INSTALLED_APPS = [
