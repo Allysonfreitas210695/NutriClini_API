@@ -8,6 +8,7 @@ drf-yasg==1.21.7
 django-crum==0.7.9
 djoser==2.2.2
 django-filter==2.4.0
+dj_database_url==2.1.0
 inflection==0.5.1
 jsonschema==4.19.0
 jsonschema-specifications==2023.7.1
