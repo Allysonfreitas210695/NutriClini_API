@@ -1,19 +1,37 @@
-import os
 from datetime import timedelta
+import os
 from pathlib import Path
-from decouple import config
 from dotenv import load_dotenv
+from decouple import config
 
-# Carrega as variáveis de ambiente do arquivo .env
+# Carregar variáveis de ambiente do arquivo .env
+env_path = Path(__file__).resolve().parent.parent / '.env'
 load_dotenv()
-
+# Configurações básicas
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config('SECRET_KEY', default='mysecretkey')
+DEBUG = os.getenv('DEBUG', default=False)
+print(DEBUG)
 
-DEBUG = config('DEBUG', default=True, cast=bool)
+ALLOWED_HOSTS = [
+    'nutricliniapi-production.up.railway.app',
+    'https://nutricliniapi-production.up.railway.app',
+    'http://nutricliniapi-production.up.railway.app',
+    'localhost', 
+    '127.0.0.1',
+]
 
-ALLOWED_HOSTS = ['*']
+CSRF_TRUSTED_ORIGINS = [
+    'https://nutricliniapi-production.up.railway.app',
+    'http://nutricliniapi-production.up.railway.app',
+    'http://localhost:8000', 
+    'http://localhost:3000', 
+    'http://localhost:3030', 
+    'http://127.0.0.1:8000', 
+    'http://127.0.0.1:3000', 
+    'http://127.0.0.1:3030', 
+]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -23,7 +41,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     'django.core.mail',
-    'django.contrib.postgres',
     #apps
     'apps.tokenProfile',
     'apps.appointments',
@@ -40,7 +57,11 @@ INSTALLED_APPS = [
     "drf_spectacular",
     'django_filters'
 ]
-
+print(config("USE_POSTGRES"))
+if config("USE_POSTGRES", False):
+    INSTALLED_APPS += [
+        'django.contrib.postgres',
+    ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -53,8 +74,6 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware"
 ]
-
-CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = "backend.urls"
 
@@ -97,17 +116,25 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(weeks=1),
 }
 
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('POSTGRES_DB'),
-        'USER': config('POSTGRES_USER'),
-        'PASSWORD': config('POSTGRES_PASSWORD'),
-        'HOST': config('PGHOST'),
-        'PORT': config('PGPORT'),
+if config('USE_POSTGRES', default=False, cast=bool):
+    DATABASES = {
+        'default': {
+            'ENGINE': config('DB_ENGINE'),
+            'NAME': config('POSTGRES_DB'),
+            'USER': config('POSTGRES_USER'),
+            'PASSWORD': config('POSTGRES_PASSWORD'),
+            'HOST': config('PGHOST'),
+            'PORT': config('PGPORT'),
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -124,18 +151,14 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Configurações de idioma e fuso horário
 LANGUAGE_CODE = "pt-br"
-
 TIME_ZONE = "America/Sao_Paulo"
-
-APPEND_SLASH = False
-
 USE_I18N = True
-
 USE_TZ = True
 
+# Configurações de arquivos estáticos
 STATIC_URL = "static/"
-
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Configurações de envio de email
@@ -143,6 +166,9 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = config('EMAIL_HOST_USER')  # Seu username do Ethereal Email
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')  # Sua senha do Ethereal Email
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = 'Nutriclinicn <nutriclinicn@gmail.com>'
+
+
+print("DEBUG during execution:", DEBUG)
