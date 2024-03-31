@@ -21,6 +21,19 @@ class CustomTokenObtainPairView(TokenObtainPairView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
+        # Obtendo o token de acesso
+        token = response.data.get('access')
+
+        # Verificando se o token é válido
+        if token:
+            # Decodificando o token para obter a data de expiração
+            from rest_framework_simplejwt.tokens import AccessToken
+            token_object = AccessToken(token)
+            expiry_date = token_object['exp']
+
+            # Adicionando a data de expiração ao retorno
+            response.data['expiry'] = expiry_date
+
         try:
             profile = Nutritionist.objects.get(email=request.data["username"])
             response.data['id'] = profile.id

@@ -13,7 +13,8 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     id = serializers.IntegerField(read_only=True)
     access = serializers.CharField(read_only=True)
     refresh = serializers.CharField(read_only=True)
-    
+    expiry = serializers.DateTimeField(read_only=True)  # Adicionando expiry ao serializer
+
     def validate(self, attrs):
         data = super().validate(attrs)
         user = self.user
