@@ -46,7 +46,6 @@ class CustomTokenRefreshView(TokenRefreshView):
     serializer_class = CustomTokenRefreshSerializer 
 
     def post(self, request, *args, **kwargs):
-        print("auiq")
         refresh_token = request.data.get('refresh')  # Extrai o refresh token da requisição
         id = request.data.get('id')  # Extrai o ID do perfil da requisição
 
@@ -62,7 +61,7 @@ class CustomTokenRefreshView(TokenRefreshView):
 
         try:
             # Tente obter o perfil pelo ID fornecido
-            # Aqui você deve substituir `Nutritionist` pelo modelo de usuário apropriado
+            # Aqui você deve substituir `User` pelo modelo de usuário apropriado
             profile = User.objects.get(id=id)
             # Adicionar o ID e o tipo do perfil à resposta
             response.data['id'] = profile.id
@@ -72,7 +71,14 @@ class CustomTokenRefreshView(TokenRefreshView):
                 {'detail': 'Profile not found for the given ID'},
                 status=status.HTTP_404_NOT_FOUND
             )
-    
+        
+        # Adicionando o campo de expiração à resposta
+        access_token = response.data.get('access')
+        if access_token:
+            from rest_framework_simplejwt.tokens import AccessToken
+            access_token_obj = AccessToken(access_token)
+            response.data['expires'] = access_token_obj['exp']
+
         # Adicionar o refresh token à resposta
         response.data['refresh'] = refresh_token
 

@@ -21,12 +21,14 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         data['id'] = user.id
         return data
 
+
 class CustomTokenRefreshSerializer(TokenRefreshSerializer):
     refresh = serializers.CharField()
     id = serializers.IntegerField(
         help_text="ID do perfil associado ao token de atualização."
     )
     access = serializers.CharField(read_only=True)
+    expires = serializers.DateTimeField(read_only=True)  # Adicionando o campo de expiração
 
     def validate(self, attrs):
         data = super().validate(attrs)
