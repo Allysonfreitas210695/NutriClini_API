@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     'django.core.mail',
+    'django.contrib.postgres',
     #apps
     'apps.tokenProfile',
     'apps.appointments',
@@ -40,10 +41,6 @@ INSTALLED_APPS = [
     'django_filters'
 ]
 
-if config("PRODUCTION", True):
-    INSTALLED_APPS += [
-        'django.contrib.postgres',
-    ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -100,27 +97,17 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(weeks=1),
 }
 
-# Define as configurações do banco de dados com base no ambiente
-if config('PRODUCTION', default=False, cast=bool):
-    # Banco de dados PostgreSQL
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': config('DB_NAME'),
-            'USER': config('DB_USER'),
-            'PASSWORD': config('DB_PASSWORD'),
-            'HOST': config('DB_HOST'),
-            'PORT': config('DB_PORT'),
-        }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': config('DB_HOST'),
+        'PORT': config('DB_PORT'),
     }
-else:
-    # Banco de dados SQLite para desenvolvimento
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
+}
 
 AUTH_PASSWORD_VALIDATORS = [
     {
