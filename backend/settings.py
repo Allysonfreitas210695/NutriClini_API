@@ -11,7 +11,7 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config('SECRET_KEY', default='mysecretkey')
-DEBUG = config('DEBUG', default=False, cast=bool)
+DEBUG = config('DEBUG', default=True, cast=bool)
 
 ALLOWED_HOSTS = [
     'nutricliniapi-production.up.railway.app',
@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     'django.core.mail',
     #apps
-    'apps.tokenProfile',
+    'apps.token',
     'apps.appointments',
     'apps.locations',
     'apps.messageClini',

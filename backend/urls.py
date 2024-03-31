@@ -3,7 +3,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from apps.nutritionist.views import NutritionistViewSet
 from apps.patient.views import PatientViewSet
-from apps.tokenProfile.views import CustomTokenObtainPairView, CustomTokenRefreshView, EnviarCodigoSenhaAPIView, ResetPasswordAPIView
+from apps.token.views import CustomTokenObtainPairView, CustomTokenRefreshView, EnviarCodigoSenhaAPIView, ResetPasswordAPIView
 from apps.appointments.views import AppointmentViewSet, TimeSchedulesViewSet
 from apps.locations.views import AddressViewSet
 from apps.messageClini.views import MessageCliniViewSet
