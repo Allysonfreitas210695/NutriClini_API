@@ -157,7 +157,7 @@ USE_I18N = True
 USE_TZ = True
 
 # Configurações de arquivos estáticos
-STATIC_URL = "static/"
+STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / "staticfiles"  # Diretório onde os arquivos estáticos serão coletados
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
