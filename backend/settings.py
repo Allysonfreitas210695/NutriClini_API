@@ -40,6 +40,11 @@ INSTALLED_APPS = [
     'django_filters'
 ]
 
+if config("PRODUCTION", True):
+    INSTALLED_APPS += [
+        'django.contrib.postgres',
+    ]
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
