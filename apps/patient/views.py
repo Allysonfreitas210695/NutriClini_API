@@ -31,5 +31,5 @@ class PatientViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'], url_path='nutritionist/(?P<id>\d+)')
     def by_nutritionist(self, request, id=None, *args, **kwargs):
         messages = Patient.objects.filter(nutritionist=id)
-        serializer = self.get_serializer(messages, many=True)
+        serializer = self.get_serializbrancher(messages, many=True)
         return Response(serializer.data) 
