@@ -4,6 +4,7 @@ import string
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework.response import Response
 from apps.nutritionist.models import Nutritionist
+from apps.patient.models import Patient
 from .serializers import CustomTokenObtainPairSerializer, CustomTokenRefreshSerializer, EnviarCodigoSenhaSerializer, ResetPasswordSerializer
 from rest_framework import status
 from rest_framework import status
@@ -12,6 +13,8 @@ from decouple import config
 from rest_framework.views import APIView
 from decouple import config
 from django.contrib.auth.models import User
+from rest_framework import serializers
+from rest_framework.exceptions import NotFound
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
@@ -34,11 +37,29 @@ class CustomTokenObtainPairView(TokenObtainPairView):
             # Adicionando a data de expiração ao retorno
             response.data['expiry'] = expiry_date
 
-        try:
-            profile = Nutritionist.objects.get(email=request.data["username"])
-            response.data['id'] = profile.id
-        except Nutritionist.DoesNotExist:
-            response.data['id'] = None
+        # Definindo id como None por padrão
+        response.data['id'] = None
+
+        # Verificando se o usuário é um nutricionista
+        if Nutritionist.objects.filter(email=request.data["username"]).exists():
+            try:
+                profile = Nutritionist.objects.get(email=request.data["username"])
+                response.data['id'] = profile.id
+                response.data['type'] = "Nutritionist"
+            except Nutritionist.DoesNotExist:
+                pass
+        # Verificando se o usuário é um paciente
+        elif Patient.objects.filter(email=request.data["username"]).exists():
+            try:
+                profile = Patient.objects.get(email=request.data["username"])
+                response.data['id'] = profile.id
+                response.data['type'] = "Patient"
+            except Patient.DoesNotExist:
+                pass
+
+        # Se o id ainda for None, nenhum perfil foi encontrado, então lança uma exceção
+        if response.data['id'] is None:
+            raise serializers.ValidationError("No profile found for the provided email.")
 
         return response
 
@@ -60,15 +81,27 @@ class CustomTokenRefreshView(TokenRefreshView):
         response = super().post(request, *args, **kwargs)
 
         try:
-            # Tente obter o perfil pelo ID fornecido
-            # Aqui você deve substituir `User` pelo modelo de usuário apropriado
-            profile = User.objects.get(id=id)
-            # Adicionar o ID e o tipo do perfil à resposta
-            response.data['id'] = profile.id
-        except User.DoesNotExist:
+            profile_type = request.data.get("type")
+            if profile_type == "Nutritionist" and Nutritionist.objects.filter(id=id).exists():
+                nutritionist = Nutritionist.objects.get(id=id)
+                # Adicionar o ID e o tipo do perfil à resposta
+                response.data['id'] = nutritionist.id
+                response.data['type'] = "Nutritionist"
+            elif profile_type == "Patient" and Patient.objects.filter(id=id).exists():
+                patient = Patient.objects.get(id=id)
+                # Adicionar o ID e o tipo do perfil à resposta
+                response.data['id'] = patient.id
+                response.data['type'] = "Patient"
+            else:
+                # Se o tipo não for reconhecido ou o perfil não for encontrado, retorne uma resposta de erro
+                return Response(
+                    {'detail': f'Profile not found for the given ID or incorrect type "{profile_type}".'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+        except NotFound as e:
             # Se o perfil não for encontrado, retorne uma resposta de erro
             return Response(
-                {'detail': 'Profile not found for the given ID'},
+                {'detail': str(e)},
                 status=status.HTTP_404_NOT_FOUND
             )
         
@@ -83,6 +116,7 @@ class CustomTokenRefreshView(TokenRefreshView):
         response.data['refresh'] = refresh_token
 
         return response
+
 
 class EnviarCodigoSenhaAPIView(APIView):
     

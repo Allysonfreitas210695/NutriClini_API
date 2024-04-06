@@ -30,8 +30,8 @@ class Patient(models.Model):
     neighborhood = models.CharField(max_length=255, blank=False, null=False)
     city = models.CharField(max_length=255, blank=False, null=False)
     state = models.CharField(max_length=255, blank=False, null=False)
+    password = models.CharField(max_length=30, validators=[MinLengthValidator(limit_value=6, message="Password must be at least 6 characters.")], null=True, blank=True)
     observation = models.TextField(blank=True, null=True) 
-
 
     class Meta:
         verbose_name = "Patient"
@@ -42,8 +42,6 @@ class Patient(models.Model):
     
     def save(self, *args, **kwargs):
         if not self.pk:
-            print("you teste")
-            print(config("EMAIL_HOST_USER"))
             send_mail(
                 'Cadastro de Paciente',
                 '', 
@@ -55,10 +53,13 @@ class Patient(models.Model):
                                 <body>
                                     <h3>Bem-vindo à NutriClinic, {self.fullName}!</h3>
                                     <p>Obrigado por se cadastrar em nossa clínica.</p>
+                                    <br/>
+                                    <p> Seu login é {self.email}</p>
+                                    <p> Sua senha é {self.password}</p>
+                                    <p> Para redefinir a senha acesse o link: <a href="google.com">Acesse aqui</a></p>
                                 </body>
                                 </html>
                                 """,
                 fail_silently=False
             )
-            print("passou")
         super().save(*args, **kwargs)
