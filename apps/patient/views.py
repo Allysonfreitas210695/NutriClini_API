@@ -27,6 +27,12 @@ class PatientViewSet(viewsets.ModelViewSet):
             return super().create(request, *args, **kwargs)
         except Exception as e:
             return Response({"Message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+    @action(detail=False, methods=['get'], url_path='status/(?P<status>\w+)')
+    def by_status(self, request, status=None, *args, **kwargs):
+        messages = Patient.objects.filter(status=status)
+        serializer = self.get_serializer(messages, many=True)
+        return Response(serializer.data) 
 
     @action(detail=False, methods=['get'], url_path='nutritionist/(?P<id>\d+)')
     def by_nutritionist(self, request, id=None, *args, **kwargs):
