@@ -53,6 +53,13 @@ class MealPlanViewSet(viewsets.ModelViewSet):
     serializer_class = MealPlanSerializer
     pagination_class = MealPlanPagination
 
+    @action(detail=False, methods=['get'], url_path='patient/(?P<id>\d+)')
+    def by_patient(self, request, id=None, *args, **kwargs):
+        messages = MealPlan.objects.filter(patient=id)
+        page = self.paginate_queryset(messages) 
+        serializer = self.get_serializer(page, many=True)
+        return self.get_paginated_response(serializer.data) if page is not None else Response(serializer.data)
+
 class MealPagination(LimitOffsetPagination):
     default_limit = 10
     max_limit = 100
@@ -64,6 +71,14 @@ class MealViewSet(viewsets.ModelViewSet):
     serializer_class = MealSerializer
     pagination_class = MealPagination
 
+    @action(detail=False, methods=['get'], url_path='mealPlan/(?P<id>\d+)')
+    def by_mealPlan(self, request, id=None, *args, **kwargs):
+        messages = Meal.objects.filter(mealPlan=id)
+        page = self.paginate_queryset(messages) 
+        serializer = self.get_serializer(page, many=True)
+        return self.get_paginated_response(serializer.data) if page is not None else Response(serializer.data)
+
+
 class FoodPagination(LimitOffsetPagination):
     default_limit = 10
     max_limit = 100
@@ -74,3 +89,10 @@ class FoodViewSet(viewsets.ModelViewSet):
     queryset = Food.objects.all()
     serializer_class = FoodSerializer
     pagination_class = FoodPagination
+
+    @action(detail=False, methods=['get'], url_path='meal/(?P<id>\d+)')
+    def by_meal(self, request, id=None, *args, **kwargs):
+        messages = Food.objects.filter(meal=id)
+        page = self.paginate_queryset(messages) 
+        serializer = self.get_serializer(page, many=True)
+        return self.get_paginated_response(serializer.data) if page is not None else Response(serializer.data)
