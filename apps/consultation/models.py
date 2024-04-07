@@ -11,8 +11,8 @@ class Consultation(models.Model):
     ]
 
     nutritionist = models.ForeignKey(Nutritionist, on_delete=models.CASCADE, related_name='consultation_nutritionist', null=False, blank=False)
-    patient = models.OneToOneField(Patient, on_delete=models.CASCADE, related_name='consultation_as_patient', null=False)
-    address_consulta = models.OneToOneField(Address, on_delete=models.CASCADE, related_name='consultation', null=False)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='consultation_as_patient', null=False)
+    address_consulta = models.ForeignKey(Address, on_delete=models.CASCADE, related_name='consultation', null=False)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, null=False, blank=False, default="pending")
     date_Consulta = models.DateField(null=True)
 
