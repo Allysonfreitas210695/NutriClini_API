@@ -9,6 +9,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.authentication import SessionAuthentication 
 from rest_framework.decorators import action
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 class PatientPagination(LimitOffsetPagination):
     default_limit = 10
@@ -27,10 +29,15 @@ class PatientViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return Response({"Message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
-    @action(detail=False, methods=['get'], url_path='status/(?P<status>\w+)')
-    def by_status(self, request, status=None, *args, **kwargs):
-        messages = Patient.objects.filter(status=status)
-        page = self.paginate_queryset(messages)  # Aplicando paginação
+    @swagger_auto_schema(manual_parameters=[
+        openapi.Parameter('status', in_=openapi.IN_QUERY, description='Filter patients by status', type=openapi.TYPE_STRING)
+    ])
+    def list(self, request, *args, **kwargs):
+        status = request.query_params.get('status')
+        queryset = Patient.objects.all()
+        if status:
+            queryset = queryset.filter(status=status)
+        page = self.paginate_queryset(queryset)
         serializer = self.get_serializer(page, many=True)
         return self.get_paginated_response(serializer.data) if page is not None else Response(serializer.data)
 
