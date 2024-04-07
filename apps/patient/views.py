@@ -9,8 +9,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.authentication import SessionAuthentication 
 from rest_framework.decorators import action
-from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 
 class PatientPagination(LimitOffsetPagination):
     default_limit = 10
@@ -29,24 +29,28 @@ class PatientViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return Response({"Message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
-    @swagger_auto_schema(manual_parameters=[
-        openapi.Parameter('status', in_=openapi.IN_QUERY, description='Filter patients by status', type=openapi.TYPE_STRING)
-    ])
-    def list(self, request, *args, **kwargs):
-        status = request.query_params.get('status')
-        queryset = Patient.objects.all()
-        if status:
-            queryset = queryset.filter(status=status)
-        page = self.paginate_queryset(queryset)
+    @action(detail=False, methods=['get'], url_path='status/(?P<status>\w+)')
+    def by_status(self, request, status=None, *args, **kwargs):
+        messages = Patient.objects.filter(status=status)
+        page = self.paginate_queryset(messages)  # Aplicando paginação
         serializer = self.get_serializer(page, many=True)
         return self.get_paginated_response(serializer.data) if page is not None else Response(serializer.data)
 
     @action(detail=False, methods=['get'], url_path='nutritionist/(?P<id>\d+)')
-    def by_nutritionist(self, request, id=None, *args, **kwargs):
+    def by_nutritionist(self, request, id=None, status=None, *args, **kwargs):
+        status = request.query_params.get('status')
         messages = Patient.objects.filter(nutritionist=id)
-        page = self.paginate_queryset(messages)  # Aplicando paginação
+        
+        if status is not None:
+            messages = messages.filter(status=status)
+        else:
+            messages = messages.all()
+        
+        page = self.paginate_queryset(messages)
         serializer = self.get_serializer(page, many=True)
+        
         return self.get_paginated_response(serializer.data) if page is not None else Response(serializer.data)
+
 
 
 class MealPlanPagination(LimitOffsetPagination):
