@@ -56,7 +56,7 @@ class Patient(models.Model):
                                     <br/>
                                     <p> Seu login é {self.email}</p>
                                     <p> Sua senha é {self.password}</p>
-                                    <p> Para redefinir a senha acesse o link: <a href="google.com">Acesse aqui</a></p>
+                                    <p> Para redefinir a senha acesse o link: <a href="https://nutri-clinic-frontend.vercel.app/forgotPassword">Acesse aqui</a></p>
                                 </body>
                                 </html>
                                 """,
