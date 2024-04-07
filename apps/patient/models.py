@@ -101,7 +101,7 @@ class Meal(models.Model):
 class Food(models.Model):
     name = models.CharField(max_length=255)
     measure = models.CharField(max_length=255)
-    quantity = models.CharField(max_length=255)
+    quantity = models.IntegerField(blank=False, null=False)
     meal = models.ForeignKey(Meal, on_delete=models.CASCADE, blank=False, null=False)
 
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Created At')
