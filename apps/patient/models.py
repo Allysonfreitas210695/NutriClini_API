@@ -45,7 +45,7 @@ class Patient(models.Model):
             send_mail(
                 'Cadastro de Paciente',
                 '', 
-                config("EMAIL_HOST_USER"), 
+                'nutriclinicn@gmail.com', 
                 [self.email], 
                 html_message=f"""
                                 <html>
