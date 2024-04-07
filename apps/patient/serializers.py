@@ -1,4 +1,4 @@
-from .models import Patient
+from .models import Food, Meal, MealPlan, Patient
 from rest_framework import serializers
 from django.db import transaction
 from django.contrib.auth import get_user_model
@@ -39,3 +39,17 @@ class PatientSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(e)
 
 
+class MealPlanSerializer(serializers.ModelSerializer): 
+    class Meta:
+        model = MealPlan
+        fields = "__all__"
+
+class MealSerializer(serializers.ModelSerializer): 
+    class Meta:
+        model = Meal
+        fields = "__all__"
+
+class FoodSerializer(serializers.ModelSerializer): 
+    class Meta:
+        model = Food
+        fields = "__all__"

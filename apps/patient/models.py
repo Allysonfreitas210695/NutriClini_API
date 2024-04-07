@@ -63,3 +63,53 @@ class Patient(models.Model):
                 fail_silently=False
             )
         super().save(*args, **kwargs)
+
+class MealPlan(models.Model):
+    name = models.CharField(max_length=255)
+    descricao = models.TextField()
+    observation = models.TextField(blank=True, null=True)
+    daysOfWeek = models.CharField(max_length=255)
+    status = models.CharField(max_length=10)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Created At')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='Updated At')
+
+    class Meta:
+        verbose_name = "MealPlan"
+        verbose_name_plural = "MealPlans"
+
+    def __str__(self):
+        return self.name
+
+class Meal(models.Model):
+    name = models.CharField(max_length=255)
+    time = models.TimeField()
+    observation = models.TextField(blank=True, null=True)
+    mealPlan = models.ForeignKey(MealPlan, on_delete=models.CASCADE, blank=False, null=False)
+
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Created At')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='Updated At')
+
+    class Meta:
+        verbose_name = "Meal"
+        verbose_name_plural = "Meals"
+
+    def __str__(self):
+        return self.name
+
+class Food(models.Model):
+    name = models.CharField(max_length=255)
+    measure = models.CharField(max_length=255)
+    quantity = models.CharField(max_length=255)
+    meal = models.ForeignKey(Meal, on_delete=models.CASCADE, blank=False, null=False)
+
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Created At')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='Updated At')
+    class Meta:
+        verbose_name = "Food"
+        verbose_name_plural = "Foods"
+
+    def __str__(self):
+        return self.name
+

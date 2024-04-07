@@ -41,8 +41,6 @@ class AppointmentViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'], url_path='nutritionist/(?P<id>\d+)')
     def by_nutritionist(self, request, id=None, *args, **kwargs):
         appointments = Appointment.objects.filter(nutritionist=id)
-        if appointments.exists():
-            serializer = self.get_serializer(appointments, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response([], status=status.HTTP_200_OK)
+        page = self.paginate_queryset(appointments)
+        serializer = self.get_serializer(page, many=True)
+        return self.get_paginated_response(serializer.data) if page is not None else Response(serializer.data)

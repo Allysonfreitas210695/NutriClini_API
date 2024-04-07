@@ -8,7 +8,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.authentication import SessionAuthentication 
 from rest_framework.decorators import action
 
-class ProfilePagination(LimitOffsetPagination):
+class MessagePagination(LimitOffsetPagination):
     default_limit = 10
     max_limit = 100
 
@@ -17,7 +17,7 @@ class MessageCliniViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     queryset = MessageClini.objects.all()
     serializer_class = MessageCliniSerializer
-    pagination_class = ProfilePagination
+    pagination_class = MessagePagination
 
     def create(self, request, *args, **kwargs):
         try:
@@ -27,9 +27,7 @@ class MessageCliniViewSet(viewsets.ModelViewSet):
         
     @action(detail=False, methods=['get'], url_path='nutritionist/(?P<id>\d+)')
     def by_nutritionist(self, request, id=None, *args, **kwargs):
-        messageClini = MessageClini.objects.filter(nutritionist=id)
-        if messageClini.exists():
-            serializer = self.get_serializer(messageClini, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response([], status=status.HTTP_200_OK) 
+        message_clini = MessageClini.objects.filter(nutritionist=id)
+        page = self.paginate_queryset(message_clini)
+        serializer = self.get_serializer(page, many=True)
+        return self.get_paginated_response(serializer.data) if page is not None else Response(serializer.data)
