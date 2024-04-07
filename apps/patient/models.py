@@ -84,7 +84,7 @@ class MealPlan(models.Model):
 
 class Meal(models.Model):
     name = models.CharField(max_length=255)
-    time = models.TimeField()
+    time = models.TimeField(blank=False, null=False, verbose_name='Time Value')
     observation = models.TextField(blank=True, null=True)
     mealPlan = models.ForeignKey(MealPlan, on_delete=models.CASCADE, blank=False, null=False)
 
