@@ -4,7 +4,7 @@ from rest_framework import viewsets, status
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
 from .models import Food, Meal, MealPlan, Patient
-from .serializers import FoodSerializer, MealPlanSerializer, MealSerializer, PatientSerializer
+from .serializers import FoodSerializer, MealPlanSerializer, MealSerializer, PatientCreateSerializer, PatientSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.authentication import SessionAuthentication 
@@ -22,6 +22,11 @@ class PatientViewSet(viewsets.ModelViewSet):
     queryset = Patient.objects.all()
     serializer_class = PatientSerializer
     pagination_class = PatientPagination
+
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return PatientCreateSerializer
+        return PatientSerializer
 
     def create(self, request, *args, **kwargs):
         try:

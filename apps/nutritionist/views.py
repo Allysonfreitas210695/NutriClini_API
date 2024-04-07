@@ -5,7 +5,7 @@ from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from .models import Nutritionist
-from .serializers import NutritionistSerializer
+from .serializers import NutritionistCreateSerializer, NutritionistSerializer
 
 class NutritionistPagination(LimitOffsetPagination):
     default_limit = 10
@@ -16,6 +16,11 @@ class NutritionistViewSet(viewsets.ModelViewSet):
     queryset = Nutritionist.objects.all()
     serializer_class = NutritionistSerializer
     pagination_class = NutritionistPagination
+
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return NutritionistCreateSerializer
+        return NutritionistSerializer
 
     def create(self, request, *args, **kwargs):
         try:

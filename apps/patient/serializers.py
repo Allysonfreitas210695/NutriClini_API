@@ -3,8 +3,12 @@ from rest_framework import serializers
 from django.db import transaction
 from django.contrib.auth import get_user_model
 
-
 class PatientSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Patient
+        exclude = ['password']  # Exclua o campo de senha
+
+class PatientCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Patient
