@@ -4,9 +4,11 @@ from rest_framework import serializers
 
 class EnviarCodigoSenhaSerializer(serializers.Serializer):
         email = serializers.EmailField()
+        type = serializers.CharField()
 
 class ResetPasswordSerializer(serializers.Serializer):
     email = serializers.EmailField()
+    type = serializers.CharField()
     new_password = serializers.CharField(max_length=30)
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):

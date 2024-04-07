@@ -120,24 +120,28 @@ class CustomTokenRefreshView(TokenRefreshView):
 
 class EnviarCodigoSenhaAPIView(APIView):
     
-    def post(self, request, *args, **kwargs):
+     def post(self, request, *args, **kwargs):
         serializer = EnviarCodigoSenhaSerializer(data=request.data)
         if serializer.is_valid():
-            email = serializer.validated_data.get('email')  # Get the validated email
-            if Nutritionist.objects.filter(email=email).exists():
-                nutritionist = Nutritionist.objects.filter(email=email).first()
-                codigo = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(10))
+            email = serializer.validated_data.get('email')
+            user_type = serializer.validated_data.get('type')
 
-                send_mail(
-                    'Seu codigó de verificação',
-                    f'Seu codigó de verificação é: {codigo}',
-                    config('EMAIL_HOST_USER'),
-                    [email],
-                    fail_silently=False,
-                )
-                return Response({'codigo': codigo, 'nutritionist': {'email': nutritionist.email}, 'mensagem': 'Email enviado com sucesso!'})
+            if user_type == 'Nutritionist' and Nutritionist.objects.filter(email=email).exists():
+                user = Nutritionist.objects.get(email=email)
+            elif user_type == 'Patient' and Patient.objects.filter(email=email).exists():
+                user = Patient.objects.get(email=email)
             else:
-                return Response({'mensagem': 'No nutritionist found with this email address'}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'mensagem': 'Nenhum usuário encontrado com este endereço de email ou tipo'}, status=status.HTTP_400_BAD_REQUEST)
+
+            codigo = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(10))
+            send_mail(
+                'Seu código de verificação',
+                f'Seu código de verificação é: {codigo}',
+                'nutriclinicn@gmail.com',
+                [email],
+                fail_silently=False,
+            )
+            return Response({'codigo': codigo, 'email': user.email, 'mensagem': 'Email enviado com sucesso!'})
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -148,9 +152,14 @@ class ResetPasswordAPIView(APIView):
         if serializer.is_valid():
             email = serializer.validated_data.get('email')
             new_password = serializer.validated_data.get('new_password')
+            user_type = serializer.validated_data.get('type')
 
-            if not email or not new_password:
-                return Response({'message': 'Both email and new password are required.'}, status=status.HTTP_400_BAD_REQUEST)
+            # Check if the type is either "Nutritionist" or "Patient"
+            if user_type not in ['Nutritionist', 'Patient']:
+                return Response({'message': 'Invalid user type.'}, status=status.HTTP_400_BAD_REQUEST)
+
+            if Nutritionist.objects.filter(email=email).count() == 0 and Patient.objects.filter(email=email).count() == 0:
+                return Response({'message': 'User with this email does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
 
             try:
                 user = User.objects.get(email=email)
@@ -160,12 +169,20 @@ class ResetPasswordAPIView(APIView):
             user.set_password(new_password)
             user.save()
 
-            try:
-                nutritionist = Nutritionist.objects.get(email=email)
-                nutritionist.password = new_password
-                nutritionist.save()
-            except Nutritionist.DoesNotExist:
-                pass 
+            if user_type == 'Nutritionist':
+                try:
+                    nutritionist = Nutritionist.objects.get(email=email)
+                    nutritionist.password = new_password
+                    nutritionist.save()
+                except Nutritionist.DoesNotExist:
+                    pass
+            elif user_type == 'Patient':
+                try:
+                    patient = Patient.objects.get(email=email)
+                    patient.password = new_password
+                    patient.save()
+                except Patient.DoesNotExist:
+                    pass
 
             return Response({'message': 'Password reset successfully.'}, status=status.HTTP_200_OK)
         else:
