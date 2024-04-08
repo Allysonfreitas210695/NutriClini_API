@@ -5,6 +5,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework.response import Response
 from apps.nutritionist.models import Nutritionist
 from apps.patient.models import Patient
+from apps.token.models import CodigoReset
 from .serializers import CustomTokenObtainPairSerializer, CustomTokenRefreshSerializer, EnviarCodigoSenhaSerializer, ResetPasswordSerializer
 from rest_framework import status
 from rest_framework import status
@@ -67,52 +68,44 @@ class CustomTokenRefreshView(TokenRefreshView):
     serializer_class = CustomTokenRefreshSerializer 
 
     def post(self, request, *args, **kwargs):
-        refresh_token = request.data.get('refresh')  # Extrai o refresh token da requisição
-        id = request.data.get('id')  # Extrai o ID do perfil da requisição
+        refresh_token = request.data.get('refresh') 
+        id = request.data.get('id') 
 
-        # Verificar se o refresh_token e o id foram fornecidos
         if not refresh_token or not id:
             return Response(
                 {'detail': 'Both refresh token and profile ID are required.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # Chamada ao método post da classe base para obter a resposta padrão
         response = super().post(request, *args, **kwargs)
 
         try:
             profile_type = request.data.get("type")
             if profile_type == "Nutritionist" and Nutritionist.objects.filter(id=id).exists():
                 nutritionist = Nutritionist.objects.get(id=id)
-                # Adicionar o ID e o tipo do perfil à resposta
                 response.data['id'] = nutritionist.id
                 response.data['type'] = "Nutritionist"
             elif profile_type == "Patient" and Patient.objects.filter(id=id).exists():
                 patient = Patient.objects.get(id=id)
-                # Adicionar o ID e o tipo do perfil à resposta
                 response.data['id'] = patient.id
                 response.data['type'] = "Patient"
             else:
-                # Se o tipo não for reconhecido ou o perfil não for encontrado, retorne uma resposta de erro
                 return Response(
                     {'detail': f'Profile not found for the given ID or incorrect type "{profile_type}".'},
                     status=status.HTTP_404_NOT_FOUND
                 )
         except NotFound as e:
-            # Se o perfil não for encontrado, retorne uma resposta de erro
             return Response(
                 {'detail': str(e)},
                 status=status.HTTP_404_NOT_FOUND
             )
         
-        # Adicionando o campo de expiração à resposta
         access_token = response.data.get('access')
         if access_token:
             from rest_framework_simplejwt.tokens import AccessToken
             access_token_obj = AccessToken(access_token)
             response.data['expires'] = access_token_obj['exp']
 
-        # Adicionar o refresh token à resposta
         response.data['refresh'] = refresh_token
 
         return response
@@ -120,28 +113,36 @@ class CustomTokenRefreshView(TokenRefreshView):
 
 class EnviarCodigoSenhaAPIView(APIView):
     
-     def post(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         serializer = EnviarCodigoSenhaSerializer(data=request.data)
         if serializer.is_valid():
             email = serializer.validated_data.get('email')
-            user_type = serializer.validated_data.get('type')
 
-            if user_type == 'Nutritionist' and Nutritionist.objects.filter(email=email).exists():
-                user = Nutritionist.objects.get(email=email)
-            elif user_type == 'Patient' and Patient.objects.filter(email=email).exists():
-                user = Patient.objects.get(email=email)
+            code = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(10))
+            
+            if Nutritionist.objects.filter(email=email).exists():
+                nutritionist = Nutritionist.objects.get(email=email)
+                CodigoReset.objects.filter(nutritionist=nutritionist).delete()
+                codigo_reset = CodigoReset.objects.create(codigo=code, nutritionist=nutritionist)
+            elif Patient.objects.filter(email=email).exists():
+                patient = Patient.objects.get(email=email)
+                CodigoReset.objects.filter(patient=patient).delete()
+                codigo_reset = CodigoReset.objects.create(codigo=code, patient=patient)
             else:
-                return Response({'mensagem': 'Nenhum usuário encontrado com este endereço de email ou tipo'}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'message': 'No user found with this email address'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            try:
+                send_mail(
+                    'Your verification code',
+                    f'Your verification code is: {codigo_reset.codigo}',
+                    'nutriclinicn@gmail.com',
+                    [email],
+                    fail_silently=False,
+                )
+            except Exception as e:
+                return Response({'message': 'Failed to send verification email'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-            codigo = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(10))
-            send_mail(
-                'Seu código de verificação',
-                f'Seu código de verificação é: {codigo}',
-                'nutriclinicn@gmail.com',
-                [email],
-                fail_silently=False,
-            )
-            return Response({'codigo': codigo, 'email': user.email, 'mensagem': 'Email enviado com sucesso!'})
+            return Response({'message': 'Email sent successfully!'}, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -154,7 +155,6 @@ class ResetPasswordAPIView(APIView):
             new_password = serializer.validated_data.get('new_password')
             user_type = serializer.validated_data.get('type')
 
-            # Check if the type is either "Nutritionist" or "Patient"
             if user_type not in ['Nutritionist', 'Patient']:
                 return Response({'message': 'Invalid user type.'}, status=status.HTTP_400_BAD_REQUEST)
 
