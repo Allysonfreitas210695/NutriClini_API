@@ -4,9 +4,11 @@ import string
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework.response import Response
 from apps.nutritionist.models import Nutritionist
+from apps.nutritionist.serializers import NutritionistSerializer
 from apps.patient.models import Patient
+from apps.patient.serializers import PatientSerializer
 from apps.token.models import CodigoReset
-from .serializers import CustomTokenObtainPairSerializer, CustomTokenRefreshSerializer, EnviarCodigoSenhaSerializer, ResetPasswordSerializer
+from .serializers import CustomTokenObtainPairSerializer, CustomTokenRefreshSerializer, EnviarCodigoSenhaSerializer, ResetPasswordSerializer, VerificarCodigoSerializer
 from rest_framework import status
 from rest_framework import status
 from django.core.mail import send_mail
@@ -145,6 +147,29 @@ class EnviarCodigoSenhaAPIView(APIView):
             return Response({'message': 'Email sent successfully!'}, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+
+class VerificarCodigoView(APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = VerificarCodigoSerializer(data=request.data)
+        if serializer.is_valid():
+            codigo = serializer.validated_data.get('codigo')
+
+            # Verificar se o código existe no novo modelo
+            if CodigoReset.objects.filter(codigo=codigo).exists():
+                codigo = CodigoReset.objects.get(codigo=codigo)
+                if codigo.patient is not None:
+                    patient_email = codigo.patient.email
+                    CodigoReset.objects.filter(patient=codigo.patient).delete()
+                    return Response({'message': 'Código válido', 'type': 'Patient', 'email': patient_email}, status=status.HTTP_200_OK)
+                elif codigo.nutritionist is not None:
+                    nutritionist_email = codigo.nutritionist.email
+                    CodigoReset.objects.filter(nutritionist=codigo.nutritionist).delete()
+                    return Response({'message': 'Código válido', 'type': 'Nutritionist', 'email': nutritionist_email}, status=status.HTTP_200_OK)
+            else:
+                return Response({'message': 'Código inválido'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ResetPasswordAPIView(APIView):
     
@@ -153,9 +178,9 @@ class ResetPasswordAPIView(APIView):
         if serializer.is_valid():
             email = serializer.validated_data.get('email')
             new_password = serializer.validated_data.get('new_password')
-            user_type = serializer.validated_data.get('type')
+            type = serializer.validated_data.get('type')
 
-            if user_type not in ['Nutritionist', 'Patient']:
+            if type not in ['Nutritionist', 'Patient']:
                 return Response({'message': 'Invalid user type.'}, status=status.HTTP_400_BAD_REQUEST)
 
             if Nutritionist.objects.filter(email=email).count() == 0 and Patient.objects.filter(email=email).count() == 0:
@@ -169,14 +194,14 @@ class ResetPasswordAPIView(APIView):
             user.set_password(new_password)
             user.save()
 
-            if user_type == 'Nutritionist':
+            if type == 'Nutritionist':
                 try:
                     nutritionist = Nutritionist.objects.get(email=email)
                     nutritionist.password = new_password
                     nutritionist.save()
                 except Nutritionist.DoesNotExist:
                     pass
-            elif user_type == 'Patient':
+            elif type == 'Patient':
                 try:
                     patient = Patient.objects.get(email=email)
                     patient.password = new_password

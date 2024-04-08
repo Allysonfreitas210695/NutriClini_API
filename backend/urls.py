@@ -3,7 +3,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from apps.nutritionist.views import NutritionistViewSet
 from apps.patient.views import FoodViewSet, MealPlanViewSet, MealViewSet, PatientViewSet
-from apps.token.views import CustomTokenObtainPairView, CustomTokenRefreshView, EnviarCodigoSenhaAPIView, ResetPasswordAPIView
+from apps.token.views import CustomTokenObtainPairView, CustomTokenRefreshView, EnviarCodigoSenhaAPIView, ResetPasswordAPIView, VerificarCodigoView
 from apps.appointments.views import AppointmentViewSet, TimeSchedulesViewSet
 from apps.locations.views import AddressViewSet
 from apps.messageClini.views import MessageCliniViewSet
@@ -37,6 +37,7 @@ urlpatterns = [
     path("api/token/", CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),  # Rota para obter o token de acesso
     path("api/token-refresh/", CustomTokenRefreshView.as_view(), name='token_refresh'),  # Rota para refresh token
     path("api/enviar_codigo/", EnviarCodigoSenhaAPIView.as_view(), name='enviar_codigo'),  # Rota para enviar código de verificação por e-mail
+    path("api/verificacao_codigo/", VerificarCodigoView.as_view(), name='enviar_codigo'),
     path('api/reset-password/', ResetPasswordAPIView.as_view(), name='reset_password'),
     path("api/", include(router.urls)),
     path('schema/', SpectacularAPIView.as_view(), name='schema'),

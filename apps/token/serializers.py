@@ -5,6 +5,8 @@ from rest_framework import serializers
 class EnviarCodigoSenhaSerializer(serializers.Serializer):
         email = serializers.EmailField()
 
+class VerificarCodigoSerializer(serializers.Serializer):
+    codigo = serializers.CharField()
 class ResetPasswordSerializer(serializers.Serializer):
     email = serializers.EmailField()
     type = serializers.CharField()
