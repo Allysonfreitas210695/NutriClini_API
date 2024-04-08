@@ -17,6 +17,7 @@ class NutritionistCreateSerializer(serializers.ModelSerializer):
         fields = "__all__"  # Inclua todos os campos para criação
 
     def create(self, validated_data):
+        user = None  # Inicialize a variável user fora do bloco try-except
         try:
             # Verificar se já existe um usuário com o mesmo e-mail
             if get_user_model().objects.filter(email=validated_data['email']).exists():
@@ -34,16 +35,15 @@ class NutritionistCreateSerializer(serializers.ModelSerializer):
                 user.is_superuser = True
                 user.save()
 
-                # Associe o usuário recém-criado ao nutricionista
-                validated_data['user'] = user
-
                 # Crie o nutricionista com os dados validados, incluindo o usuário
-                nutritionist = Nutritionist.objects.create(**validated_data)
-
-            return nutritionist
+                nutritionist_serializer = self.Meta.model(**validated_data)
+                nutritionist_serializer.save()
+                
+            return validated_data
         except Exception as e:
-            # Se ocorrer um erro, desfazer a criação do usuário
-            user.delete()
+            # Se ocorrer um erro, desfazer a criação do usuário se ele foi criado
+            if user:
+                user.delete()
             raise serializers.ValidationError(e)
 
 
