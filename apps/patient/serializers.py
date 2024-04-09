@@ -1,4 +1,4 @@
-from .models import Food, Meal, MealPlan, Patient
+from .models import Avaliation, Food, Meal, MealPlan, Patient, Prescription
 from rest_framework import serializers
 from django.db import transaction
 from django.contrib.auth import get_user_model
@@ -56,4 +56,14 @@ class MealSerializer(serializers.ModelSerializer):
 class FoodSerializer(serializers.ModelSerializer): 
     class Meta:
         model = Food
+        fields = "__all__"
+
+class AvaliationSerializer(serializers.ModelSerializer): 
+    class Meta:
+        model = Avaliation
+        fields = "__all__"
+
+class PrescriptionSerializer(serializers.ModelSerializer): 
+    class Meta:
+        model = Prescription
         fields = "__all__"

@@ -113,3 +113,32 @@ class Food(models.Model):
     def __str__(self):
         return self.name
 
+class Avaliation(models.Model):
+    type = models.CharField(max_length=255, blank=False, null=False)
+    description = models.CharField(max_length=255, blank=True, null=True)
+    date = models.DateField(blank=False, null=False)
+    height = models.FloatField(blank=False, null=False)
+    current_weight = models.FloatField(blank=False, null=False)
+    ideal_weight = models.FloatField(blank=False, null=False)
+    observation = models.TextField(blank=False, null=False)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, null=False, blank=False)
+
+    class Meta:
+        verbose_name = "Avaliation"
+        verbose_name_plural = "Avaliations"
+
+    def __str__(self):
+        return self.description
+
+class Prescription(models.Model):
+    name = models.CharField(max_length=255, blank=False, null=False)
+    description = models.CharField(max_length=255, blank=True, null=True)
+    date = models.DateField(blank=False, null=False)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, null=False, blank=False)
+
+    class Meta:
+        verbose_name = "Prescription"
+        verbose_name_plural = "Prescriptions"
+
+    def __str__(self):
+        return self.name

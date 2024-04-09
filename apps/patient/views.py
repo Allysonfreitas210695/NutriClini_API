@@ -3,8 +3,8 @@
 from rest_framework import viewsets, status
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
-from .models import Food, Meal, MealPlan, Patient
-from .serializers import FoodSerializer, MealPlanSerializer, MealSerializer, PatientCreateSerializer, PatientSerializer
+from .models import Avaliation, Food, Meal, MealPlan, Patient, Prescription
+from .serializers import AvaliationSerializer, FoodSerializer, MealPlanSerializer, MealSerializer, PatientCreateSerializer, PatientSerializer, PrescriptionSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.authentication import SessionAuthentication 
@@ -109,6 +109,42 @@ class FoodViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'], url_path='meal/(?P<id>\d+)')
     def by_meal(self, request, id=None, *args, **kwargs):
         messages = Food.objects.filter(meal=id)
+        page = self.paginate_queryset(messages) 
+        serializer = self.get_serializer(page, many=True)
+        return self.get_paginated_response(serializer.data) if page is not None else Response(serializer.data)
+    
+class AvaliationPagination(LimitOffsetPagination):
+    default_limit = 10
+    max_limit = 100
+
+class AvaliationViewSet(viewsets.ModelViewSet):
+    authentication_classes = [SessionAuthentication, JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    queryset = Avaliation.objects.all()
+    serializer_class = AvaliationSerializer
+    pagination_class = AvaliationPagination
+
+    @action(detail=False, methods=['get'], url_path='patient/(?P<id>\d+)')
+    def by_meal(self, request, id=None, *args, **kwargs):
+        messages = Avaliation.objects.filter(patient=id)
+        page = self.paginate_queryset(messages) 
+        serializer = self.get_serializer(page, many=True)
+        return self.get_paginated_response(serializer.data) if page is not None else Response(serializer.data)
+    
+class PrescriptionPagination(LimitOffsetPagination):
+    default_limit = 10
+    max_limit = 100
+
+class PrescriptionViewSet(viewsets.ModelViewSet):
+    authentication_classes = [SessionAuthentication, JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    queryset = Prescription.objects.all()
+    serializer_class = PrescriptionSerializer
+    pagination_class = PrescriptionPagination
+
+    @action(detail=False, methods=['get'], url_path='patient/(?P<id>\d+)')
+    def by_meal(self, request, id=None, *args, **kwargs):
+        messages = Prescription.objects.filter(patient=id)
         page = self.paginate_queryset(messages) 
         serializer = self.get_serializer(page, many=True)
         return self.get_paginated_response(serializer.data) if page is not None else Response(serializer.data)
