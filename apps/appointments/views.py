@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.authentication import SessionAuthentication 
 from .models import Appointment, TimeSchedules
-from .serializers import AppointmentSerializer, TimeSchedulesSerializer
+from .serializers import AppointmentReadSerializer, AppointmentSerializer, TimeSchedulesSerializer
 from rest_framework.decorators import action
 from django.core.exceptions import ValidationError as DjangoValidationError
 
@@ -44,8 +44,17 @@ class AppointmentViewSet(viewsets.ModelViewSet):
     def by_nutritionist(self, request, id=None, *args, **kwargs):
         appointments = Appointment.objects.filter(nutritionist=id)
         page = self.paginate_queryset(appointments)
-        serializer = self.get_serializer(page, many=True)
+        
+        # Use o serializador de leitura que inclui o campo service_location
+        serializer = AppointmentReadSerializer(page, many=True, context={'include_service_location': True})
+        
         return self.get_paginated_response(serializer.data) if page is not None else Response(serializer.data)
+
+    def get_serializer_class(self):
+        # Use o serializador de leitura para respostas de consulta (GET)
+        if self.action in ['list', 'retrieve']:
+            return AppointmentReadSerializer
+        return AppointmentSerializer
 
 class TimeSchedulesPagination(LimitOffsetPagination):
     default_limit = 10

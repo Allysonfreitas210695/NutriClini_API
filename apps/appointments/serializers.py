@@ -7,6 +7,29 @@ class TimeSchedulesSerializer(serializers.ModelSerializer):
         model = TimeSchedules
         fields = "__all__"
 
+
+class AppointmentReadSerializer(serializers.ModelSerializer):
+    schedules = TimeSchedulesSerializer(many=True, required=False)
+    service_location = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Appointment
+        fields = "__all__"
+
+    def get_service_location(self, obj):
+        if hasattr(obj, 'service_location'):
+            return {
+                'id': obj.service_location.id,
+                'name': obj.service_location.full_name,
+                "street": obj.service_location.street,
+                "number": obj.service_location.number,
+                "neighborhood": obj.service_location.neighborhood,
+                "cep": obj.service_location.cep,
+                "state": obj.service_location.state
+            }
+        return None
+
+
 class AppointmentSerializer(serializers.ModelSerializer):
     schedules = TimeSchedulesSerializer(many=True, required=False)
 
