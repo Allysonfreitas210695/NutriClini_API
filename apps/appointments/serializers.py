@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Appointment, TimeSchedules
+from django.core.exceptions import ValidationError
 
 class TimeSchedulesSerializer(serializers.ModelSerializer):
     class Meta:
@@ -23,14 +24,34 @@ class AppointmentSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         schedules_data = validated_data.pop('schedules', [])
+        existing_schedules = instance.schedules.all()
+
+        # Criar um dicionário de horários existentes para facilitar a correspondência
+        existing_schedules_dict = {schedule.id: schedule for schedule in existing_schedules}
+
+        for schedule_data in schedules_data:
+            schedule_id = schedule_data.get('id')
+            if schedule_id in existing_schedules_dict:
+                # Se o ID estiver presente e corresponder a um agendamento existente, atualize-o
+                schedule_instance = existing_schedules_dict[schedule_id]
+                schedule_instance.time_value = schedule_data.get('time_value', schedule_instance.time_value)
+                schedule_instance.status = schedule_data.get('status', schedule_instance.status)
+                schedule_instance.save()
+            else:
+                # Caso contrário, verifique se existe um agendamento com a mesma hora
+                existing_schedule = existing_schedules.filter(time_value=schedule_data['time_value']).first()
+                if existing_schedule:
+                    # Se um agendamento com a mesma hora existir, atualize-o em vez de criar um novo
+                    existing_schedule.status = schedule_data.get('status', existing_schedule.status)
+                    existing_schedule.save()
+                else:
+                    # Caso contrário, crie um novo agendamento
+                    new_schedule = TimeSchedules.objects.create(**schedule_data)
+                    instance.schedules.add(new_schedule)
+
+        # Atualizar os outros campos do agendamento
         instance.date_appointments = validated_data.get('date_appointments', instance.date_appointments)
         instance.service_location = validated_data.get('service_location', instance.service_location)
         instance.save()
-
-        # Clear existing schedules and add new ones
-        instance.schedules.clear()
-        for schedule_data in schedules_data:
-            time_schedule, _ = TimeSchedules.objects.get_or_create(**schedule_data)
-            instance.schedules.add(time_schedule)
 
         return instance

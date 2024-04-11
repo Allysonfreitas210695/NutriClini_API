@@ -1,6 +1,7 @@
-from django.contrib.auth.models import User
 from apps.locations.models import Address
 from django.db import models
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 
 from apps.nutritionist.models import Nutritionist
 
@@ -21,7 +22,7 @@ class TimeSchedules(models.Model):
 
 class Appointment(models.Model):
     nutritionist = models.ForeignKey(Nutritionist, on_delete=models.CASCADE, related_name='appointment_nutritionist', null=False, blank=False)
-    date_appointments = models.DateField(null=False)
+    date_appointments = models.DateField(unique=True, null=False)
     service_location = models.ForeignKey(Address, on_delete=models.CASCADE, related_name='appointments', null=False)
     schedules = models.ManyToManyField(TimeSchedules, related_name='appointments', verbose_name='TimeSchedules', blank=True)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Created At')
@@ -32,4 +33,8 @@ class Appointment(models.Model):
         verbose_name_plural = "Appointments"
 
     def __str__(self):
-        return f"{self.user} - {self.date_appointments}"
+        return f"{self.nutritionist} - {self.date_appointments}"
+    
+    def delete(self, *args, **kwargs):
+        self.schedules.all().delete()
+        super().delete(*args, **kwargs)
