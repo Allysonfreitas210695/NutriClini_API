@@ -4,7 +4,7 @@ from rest_framework.routers import DefaultRouter
 from apps.nutritionist.views import NutritionistViewSet
 from apps.patient.views import AvaliationViewSet, FoodViewSet, MealPlanViewSet, MealViewSet, PatientViewSet, PrescriptionViewSet
 from apps.token.views import CustomTokenObtainPairView, CustomTokenRefreshView, EnviarCodigoSenhaAPIView, ResetPasswordAPIView, VerificarCodigoView
-from apps.appointments.views import AppointmentViewSet, TimeSchedulesViewSet
+from apps.appointments.views import AppointmentViewSet
 from apps.locations.views import AddressViewSet
 from apps.messageClini.views import MessageCliniViewSet
 from apps.consultation.views import ConsultationViewSet
@@ -34,8 +34,6 @@ router.register(r'Prescription', PrescriptionViewSet, basename='prescriptions')
 router.register(r'mealPlan', MealPlanViewSet, basename='mealPlans')
 
 router.register(r'meal', MealViewSet, basename='meals')
-
-router.register(r'TimeSchedules', TimeSchedulesViewSet, basename='timeSchedules')
 
 router.register(r'MessageClinis', MessageCliniViewSet, basename='messageClini')
 

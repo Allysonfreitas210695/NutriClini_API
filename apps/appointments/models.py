@@ -5,8 +5,13 @@ from django.db import models
 from apps.nutritionist.models import Nutritionist
 
 class TimeSchedules(models.Model):
-    time_value = models.TimeField(verbose_name='Time Value')
+    STATUS_CHOICES = [
+        ('unavailable', 'Unavailable'),
+        ('available', 'Available'),
+    ]
 
+    time_value = models.TimeField(verbose_name='Time Value')
+    status = models.CharField(max_length=15, choices=STATUS_CHOICES, null=False, blank=False, default="available")
     class Meta:
         verbose_name = "TimeSchedule"
         verbose_name_plural = "TimeSchedules"
@@ -18,7 +23,7 @@ class Appointment(models.Model):
     nutritionist = models.ForeignKey(Nutritionist, on_delete=models.CASCADE, related_name='appointment_nutritionist', null=False, blank=False)
     date_appointments = models.DateField(null=False)
     service_location = models.ForeignKey(Address, on_delete=models.CASCADE, related_name='appointments', null=False)
-    schedules = models.ManyToManyField(TimeSchedules, related_name='appointments', verbose_name='Schedules', blank=True)
+    schedules = models.ManyToManyField(TimeSchedules, related_name='appointments', verbose_name='TimeSchedules', blank=True)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Created At')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Updated At')
 
