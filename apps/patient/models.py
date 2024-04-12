@@ -44,22 +44,50 @@ class Patient(models.Model):
         if not self.pk:
             send_mail(
                 'Cadastro de Paciente',
-                '', 
-                'nutriclinicn@gmail.com', 
-                [self.email], 
+                '',
+                'nutriclinicn@gmail.com',
+                [self.email],
                 html_message=f"""
-                                <html>
-                                <head></head>
-                                <body>
-                                    <h3>Bem-vindo à NutriClinic, {self.fullName}!</h3>
-                                    <p>Obrigado por se cadastrar em nossa clínica.</p>
-                                    <br/>
-                                    <p> Seu login é {self.email}</p>
-                                    <p> Sua senha é {self.password}</p>
-                                    <p> Para redefinir a senha acesse o link: <a href="https://nutri-clinic-frontend.vercel.app/forgotPassword">Acesse aqui</a></p>
-                                </body>
-                                </html>
-                                """,
+                    <html>
+                    <head>
+                        <style>
+                            body {{
+                                font-family: Arial, sans-serif;
+                            }}
+                            .container {{
+                                max-width: 600px;
+                                margin: 0 auto;
+                                padding: 20px;
+                                border: 1px solid #ccc;
+                                border-radius: 5px;
+                            }}
+                            h3 {{
+                                color: #333;
+                            }}
+                            p {{
+                                margin-bottom: 10px;
+                            }}
+                            a {{
+                                color: #007bff;
+                                text-decoration: none;
+                            }}
+                        </style>
+                    </head>
+                    <body>
+                        <div class="container">
+                            <h3>Bem-vindo à NutriClinic, {self.fullName}!</h3>
+                            <p>Obrigado por se cadastrar em nossa clínica.</p>
+                            <p>Aqui estão os detalhes do seu cadastro:</p>
+                            <ul>
+                                <li><strong>Login:</strong> {self.email}</li>
+                                <li><strong>Senha:</strong> {self.password}</li>
+                            </ul>
+                            <p>Para redefinir sua senha, acesse o seguinte link:</p>
+                            <p><a href="https://nutri-clinic-frontend.vercel.app/forgotPassword">Redefinir Senha</a></p>
+                        </div>
+                    </body>
+                    </html>
+                """,
                 fail_silently=False
             )
         super().save(*args, **kwargs)

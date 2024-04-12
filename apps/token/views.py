@@ -135,12 +135,46 @@ class EnviarCodigoSenhaAPIView(APIView):
             
             try:
                 send_mail(
-                    'Your verification code',
-                    f'Your verification code is: {codigo_reset.codigo}',
+                    'Seu código de verificação',
+                    f'Seu código de verificação é: {codigo_reset.codigo}',
                     'nutriclinicn@gmail.com',
                     [email],
-                    fail_silently=False,
+                    html_message=f"""
+                        <html>
+                        <head>
+                            <style>
+                                body {{
+                                    font-family: Arial, sans-serif;
+                                }}
+                                .container {{
+                                    max-width: 600px;
+                                    margin: 0 auto;
+                                    padding: 20px;
+                                    border: 1px solid #ccc;
+                                    border-radius: 5px;
+                                }}
+                                h3 {{
+                                    color: #333;
+                                }}
+                                p {{
+                                    margin-bottom: 10px;
+                                }}
+                            </style>
+                        </head>
+                        <body>
+                            <div class="container">
+                                <h3>Seu código de verificação</h3>
+                                <p>Seu código de verificação é: <strong>{codigo_reset.codigo}</strong></p>
+                                <p>Use este código para concluir o processo de verificação.</p>
+                                <p>Obrigado,</p>
+                                <p>Equipe NutriClinic</p>
+                            </div>
+                        </body>
+                        </html>
+                    """,
+                    fail_silently=False
                 )
+
             except Exception as e:
                 return Response({'message': 'Failed to send verification email'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
