@@ -14,7 +14,7 @@ class Consultation(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='consultation_as_patient', null=False)
     address_consulta = models.ForeignKey(Address, on_delete=models.CASCADE, related_name='consultation', null=False)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, null=False, blank=False, default="pending")
-    date_Consulta = models.DateField(null=True)
+    date_Consulta = models.DateTimeField(null=True)
 
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Created At')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Updated At')
