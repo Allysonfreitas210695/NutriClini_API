@@ -26,22 +26,4 @@ class Consultation(models.Model):
     def __str__(self):
         return f"Consulta de {self.patient.username} em {self.date_Consulta}"
 
-    def save(self, *args, **kwargs):
-        if self.status == 'finished' and self.pk is not None:
-            ConsultationHistory.objects.create(patient=self.patient, consultation=self, message='Consulta concluída')
-        super().save(*args, **kwargs)
 
-class ConsultationHistory(models.Model):
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='consultation_history')
-    consultation = models.ForeignKey(Consultation, on_delete=models.CASCADE, related_name='consultation_history')
-    message = models.TextField()
-
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Created At')
-    updated_at = models.DateTimeField(auto_now=True, verbose_name='Updated At')
-
-    class Meta:
-        verbose_name = "ConsultationHistory"
-        verbose_name_plural = "ConsultationHistories"
-
-    def __str__(self):
-        return f"Histórico de consultas para {self.user_patient.username}"

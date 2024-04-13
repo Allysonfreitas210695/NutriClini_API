@@ -6,7 +6,7 @@ from apps.locations.models import Address
 from apps.locations.serializers import AddressSerializer
 from apps.patient.models import Patient
 from apps.patient.serializers import PatientSerializer
-from .models import Consultation, ConsultationHistory
+from .models import Consultation
 from django.core.mail import send_mail
 from django.db import transaction
 
@@ -114,9 +114,13 @@ class ConsultationSerializer(serializers.ModelSerializer):
 
         return consultation
 
-
-
-class ConsultationHistorySerializer(serializers.ModelSerializer):
+class ConsultationUpdateReadSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ConsultationHistory
-        fields = "__all__"
+        model = Consultation
+        fields = ['status']
+
+    def update(self, instance, validated_data):
+        status = validated_data.get("status")
+        instance.status = status
+        instance.save()
+        return instance
